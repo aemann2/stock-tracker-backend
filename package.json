@@ -1,5 +1,10 @@
 {
-  "dependencies": {
-    "express": "^4.17.1"
-  }
+	"dependencies": {
+		"express": "^4.17.1"
+	},
+	"engines": {
+		"node": "16.x",
+		"npm": "7.20.3",
+		"yarn": "1.22.11"
+	}
 }
