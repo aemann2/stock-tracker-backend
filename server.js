@@ -1,27 +1,16 @@
 const express = require('express');
 const app = express();
-require('dotenv').config({ path: './config/config.env' });
 const port = process.env.PORT || 5000;
-const { Client } = require('pg');
+const db = require('./config/db');
 
 // body parser
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-const client = new Client({
-	connectionString: process.env.DATABASE_URL,
-	ssl: {
-		rejectUnauthorized: false,
-	},
-});
-
-client.connect();
-
 app.get('/', async (req, res) => {
 	try {
-		const result = await client.query('SELECT * FROM test;');
-		res.send(result.rows);
-		client.end();
+		const result = await db.any('SELECT * FROM test;');
+		res.send(result);
 	} catch (err) {
 		console.error(err);
 		res.send('Error ' + err);
@@ -31,9 +20,7 @@ app.get('/', async (req, res) => {
 app.post('/', async (req, res) => {
 	try {
 		const { name } = req.body;
-		const query = await client.query('INSERT INTO test(name) VALUES($1)', [
-			name,
-		]);
+		const query = await db.query('INSERT INTO test(name) VALUES($1)', [name]);
 		res.send(query);
 	} catch (err) {
 		console.log(err);
