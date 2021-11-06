@@ -7,23 +7,21 @@ const db = require('./config/db');
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+app.use('/auth', require('./routes/login'));
+app.use('/buy', require('./routes/buy'));
+app.use('/sell', require('./routes/sell'));
+app.use('/history', require('./routes/history'));
+app.use('/quote', require('./routes/quote'));
+
 app.get('/', async (req, res) => {
 	try {
-		const result = await db.any('SELECT * FROM test;');
+		const result = await db.query(
+			'SELECT symbol, shares FROM portfolios WHERE user_id = 1;'
+		);
 		res.send(result);
 	} catch (err) {
 		console.error(err);
 		res.send('Error ' + err);
-	}
-});
-
-app.post('/', async (req, res) => {
-	try {
-		const { name } = req.body;
-		const query = await db.query('INSERT INTO test(name) VALUES($1)', [name]);
-		res.send(query);
-	} catch (err) {
-		console.log(err);
 	}
 });
 
