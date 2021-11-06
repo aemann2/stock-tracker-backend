@@ -7,7 +7,9 @@ const db = require('../config/db');
 // @access Private
 router.get('/', async (req, res) => {
 	try {
-		const result = await db.any('SELECT * FROM transactions;');
+		const result = await db.query(
+			'SELECT symbol, shares, price, trans_type, transacted FROM transactions WHERE user_id = 1;'
+		);
 		res.send(result);
 	} catch (err) {
 		console.error(err);

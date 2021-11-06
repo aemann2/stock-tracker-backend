@@ -6,8 +6,17 @@ const db = require('../config/db');
 // @description Buy stock
 // @access Private
 router.post('/', async (req, res) => {
+	const { user_id, symbol, shares, price, trans_type } = req.body;
 	try {
-	} catch (err) {}
+		await db.query(
+			'INSERT INTO transactions (user_id, symbol, shares, price, trans_type, transacted) VALUES ($1, $2, $3, $4, $5, now());',
+			[user_id, symbol, shares, price, trans_type]
+		);
+		res.status(200).send('Success');
+	} catch (err) {
+		console.error(err);
+		res.send('Error ' + err);
+	}
 });
 
 // @router PUT buy

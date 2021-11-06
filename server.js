@@ -15,7 +15,9 @@ app.use('/quote', require('./routes/quote'));
 
 app.get('/', async (req, res) => {
 	try {
-		const result = await db.any('SELECT * FROM users;');
+		const result = await db.query(
+			'SELECT symbol, shares FROM portfolios WHERE user_id = 1;'
+		);
 		res.send(result);
 	} catch (err) {
 		console.error(err);
