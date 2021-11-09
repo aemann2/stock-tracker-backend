@@ -7,7 +7,8 @@ const db = require('./config/db');
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.use('/auth', require('./routes/login'));
+app.use('/login', require('./routes/login'));
+app.use('/register', require('./routes/register'));
 app.use('/buy', require('./routes/buy'));
 app.use('/sell', require('./routes/sell'));
 app.use('/history', require('./routes/history'));
