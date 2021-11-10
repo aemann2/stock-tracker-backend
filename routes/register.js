@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
 
 // @router POST /auth
@@ -27,22 +28,26 @@ router.post(
 			const user = await db.oneOrNone(`SELECT * FROM users WHERE email = $1`, [
 				email,
 			]);
-			// if user exists, send a 403
+			// if user exists, send a 400
 			if (user) {
 				return res
-					.status(403)
+					.status(400)
 					.json({ error: 'A user with this email already exists' });
 			}
 
 			const salt = await bcrypt.genSalt(10);
 			const hash = await bcrypt.hash(password, salt);
 
-			await db.query(`INSERT INTO users (email, hash) VALUES($1, $2)`, [
-				email,
-				hash,
-			]);
+			const userid = await db.query(
+				`INSERT INTO users (email, hash) VALUES($1, $2) RETURNING id`,
+				[email, hash]
+			);
 
-			res.send('Created!');
+			const token = jwt.sign({ id: userid }, process.env.JWT_SECRET, {
+				expiresIn: 3600,
+			});
+
+			return res.status(201).json({ status: 'Account created', token });
 		} catch (err) {
 			return res.status(500).json({ error: err });
 		}
