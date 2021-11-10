@@ -23,16 +23,17 @@ router.post(
 
 		try {
 			const { email, password } = req.body;
+
 			const user = await db.oneOrNone(`SELECT * FROM users WHERE email = $1`, [
 				email,
 			]);
 			// if user exists, send a 403
 			if (user) {
-				res
+				return res
 					.status(403)
 					.json({ error: 'A user with this email already exists' });
-				return;
 			}
+
 			const salt = await bcrypt.genSalt(10);
 			const hash = await bcrypt.hash(password, salt);
 
@@ -40,9 +41,10 @@ router.post(
 				email,
 				hash,
 			]);
+
 			res.send('Created!');
 		} catch (err) {
-			res.status(500).json({ error: err });
+			return res.status(500).json({ error: err });
 		}
 	}
 );
