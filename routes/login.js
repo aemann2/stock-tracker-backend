@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
 
 // @router POST /auth
@@ -29,7 +30,7 @@ router.post(
 				return res.status(400).json({ error: 'That user does not exist' });
 			}
 
-			const { hash } = user;
+			const { id, hash } = user;
 
 			const hashCheck = await bcrypt.compare(password, hash);
 
@@ -37,7 +38,11 @@ router.post(
 				return res.status(400).json({ error: 'Incorrect password' });
 			}
 
-			res.send('Successfully logged in!');
+			const token = jwt.sign({ id }, process.env.JWT_SECRET, {
+				expiresIn: 3600,
+			});
+
+			return res.json({ token });
 		} catch (err) {
 			return res.status(500).json({ error: err });
 		}
