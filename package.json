@@ -8,7 +8,7 @@
 		"pg-promise": "^10.11.1"
 	},
 	"engines": {
-		"node": "17.x",
+		"node": "^16.x.x",
 		"npm": "7.20.3",
 		"yarn": "1.22.x"
 	},

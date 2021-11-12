@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const port = process.env.PORT || 5000;
+const auth = require('./middleware/auth');
 const db = require('./config/db');
 
 // body parser
@@ -14,11 +15,18 @@ app.use('/sell', require('./routes/sell'));
 app.use('/history', require('./routes/history'));
 app.use('/quote', require('./routes/quote'));
 
-app.get('/', async (req, res) => {
+// @router GET /
+// @description See stock portfolio
+// @access Private
+app.get('/', auth, async (req, res) => {
+	// getting the user id from the middleware
+	const userId = req.user.id;
 	try {
 		const result = await db.query(
-			'SELECT symbol, shares FROM portfolios WHERE user_id = 1;'
+			'SELECT symbol, shares FROM portfolios WHERE user_id = $1;',
+			[userId]
 		);
+		console.log(userId);
 		res.send(result);
 	} catch (err) {
 		console.error(err);
