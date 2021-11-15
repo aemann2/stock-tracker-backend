@@ -13,10 +13,10 @@ router.get('/', auth, async (req, res) => {
 			'SELECT symbol, shares, price, trans_type, transacted FROM transactions WHERE user_id = $1;',
 			[userId]
 		);
-		res.send(result);
+		return res.json({ data: result });
 	} catch (err) {
 		console.error(err);
-		res.send('Error ' + err);
+		return res.json({ error: err });
 	}
 });
 
