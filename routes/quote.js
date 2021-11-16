@@ -8,6 +8,7 @@ const auth = require('../middleware/auth');
 // @access Private
 router.get('/', auth, async (req, res) => {
 	const userId = req.user.id;
+
 	try {
 		res.send('Quote');
 	} catch (err) {

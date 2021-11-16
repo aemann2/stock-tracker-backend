@@ -15,13 +15,13 @@ router.post(
 	async (req, res) => {
 		// checking for errors through express-validator
 		const errors = validationResult(req);
+
 		if (!errors.isEmpty()) {
 			return res.status(400).json({ errors: errors.array() });
 		}
 
 		try {
 			const { email, password } = req.body;
-
 			const user = await db.oneOrNone(`SELECT * FROM users WHERE email = $1`, [
 				email,
 			]);
@@ -31,9 +31,7 @@ router.post(
 			}
 
 			const { id, hash } = user;
-
 			const hashCheck = await bcrypt.compare(password, hash);
-
 			if (!hashCheck) {
 				return res.status(400).json({ error: 'Incorrect password' });
 			}
@@ -41,7 +39,6 @@ router.post(
 			const token = jwt.sign({ id }, process.env.JWT_SECRET, {
 				expiresIn: 3600,
 			});
-
 			return res.json({ token });
 		} catch (err) {
 			console.log(err);

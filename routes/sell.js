@@ -9,6 +9,7 @@ const db = require('../config/db');
 router.put('/', auth, async (req, res) => {
 	const userId = req.user.id;
 	const { symbol, shares, price, trans_type } = req.body;
+
 	try {
 		db.tx(async (t) => {
 			await t.none(
