@@ -3,22 +3,28 @@ const router = express.Router();
 const auth = require('../middleware/auth');
 const db = require('../config/db');
 
-// @router POST sell
-// @description Sell stock
-// @access Private
-router.post('/', auth, async (req, res) => {
-	const userId = req.user.id;
-	try {
-	} catch (err) {}
-});
-
 // @router PUT sell
-// @description Decrease number of stock
+// @description Sell stock
 // @access Private
 router.put('/', auth, async (req, res) => {
 	const userId = req.user.id;
+	const { symbol, shares, price, trans_type } = req.body;
 	try {
-	} catch (err) {}
+		db.tx(async (t) => {
+			await t.none(
+				'INSERT INTO transactions (user_id, symbol, shares, price, trans_type, transacted) VALUES ($1, $2, $3, $4, $5, now());',
+				[userId, symbol, shares, price, trans_type]
+			);
+			await t.none(
+				'UPDATE portfolios SET shares = shares - $1 WHERE symbol = $2 AND user_id = $3;',
+				[shares, symbol, userId]
+			);
+		});
+		return res.status(200).json({ msg: 'Success' });
+	} catch (err) {
+		console.error(err);
+		return res.status(500).json({ error: err });
+	}
 });
 
 // @router DELETE sell
@@ -26,8 +32,23 @@ router.put('/', auth, async (req, res) => {
 // @access Private
 router.delete('/', auth, async (req, res) => {
 	const userId = req.user.id;
+	const { symbol, shares, price, trans_type } = req.body;
 	try {
-	} catch (err) {}
+		db.tx(async (t) => {
+			await t.none(
+				'INSERT INTO transactions (user_id, symbol, shares, price, trans_type, transacted) VALUES ($1, $2, $3, $4, $5, now());',
+				[userId, symbol, shares, price, trans_type]
+			);
+			await t.none(
+				'DELETE FROM portfolios WHERE user_id = $1 AND symbol = $2;',
+				[userId, symbol]
+			);
+		});
+		return res.status(200).json({ msg: 'Success' });
+	} catch (err) {
+		console.error(err);
+		return res.status(500).json({ error: err });
+	}
 });
 
 module.exports = router;
