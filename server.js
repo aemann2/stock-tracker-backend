@@ -21,12 +21,12 @@ app.use('/quote', require('./routes/quote'));
 app.get('/', auth, async (req, res) => {
 	// getting the user id from the middleware
 	const userId = req.user.id;
+
 	try {
 		const result = await db.query(
 			'SELECT symbol, shares FROM portfolios WHERE user_id = $1;',
 			[userId]
 		);
-		console.log(userId);
 		res.send(result);
 	} catch (err) {
 		console.error(err);

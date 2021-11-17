@@ -7,10 +7,8 @@ const auth = require('../middleware/auth');
 // @description Quote stock prices
 // @access Private
 router.get('/', auth, async (req, res) => {
-	const userId = req.user.id;
-
 	try {
-		res.send('Quote');
+		res.status(200).send();
 	} catch (err) {
 		console.log(err);
 		return res.status(500).json({ error: err });
