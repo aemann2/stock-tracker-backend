@@ -8,6 +8,7 @@ const db = require('../config/db');
 // @access Private
 router.get('/', auth, async (req, res) => {
 	const userId = req.user.id;
+
 	try {
 		const result = await db.query(
 			'SELECT symbol, shares, price, trans_type, transacted FROM transactions WHERE user_id = $1;',

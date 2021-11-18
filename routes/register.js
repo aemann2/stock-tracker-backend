@@ -18,13 +18,13 @@ router.post(
 	async (req, res) => {
 		// checking for errors through express-validator
 		const errors = validationResult(req);
+
 		if (!errors.isEmpty()) {
 			return res.status(400).json({ errors: errors.array() });
 		}
 
 		try {
 			const { email, password } = req.body;
-
 			const user = await db.oneOrNone(`SELECT * FROM users WHERE email = $1`, [
 				email,
 			]);
@@ -37,16 +37,13 @@ router.post(
 
 			const salt = await bcrypt.genSalt(10);
 			const hash = await bcrypt.hash(password, salt);
-
 			const userid = await db.query(
 				`INSERT INTO users (email, hash) VALUES($1, $2) RETURNING id`,
 				[email, hash]
 			);
-
 			const token = jwt.sign({ id: userid }, process.env.JWT_SECRET, {
 				expiresIn: 3600,
 			});
-
 			return res.status(201).json({ status: 'Account created', token });
 		} catch (err) {
 			return res.status(500).json({ error: err });
