@@ -8,12 +8,12 @@ const db = require('../config/db');
 // @access Private
 router.put('/', auth, async (req, res) => {
 	const userId = req.user.id;
-	const { symbol, shares, price, trans_type } = req.body;
+	const { symbol, shares, price } = req.body;
 
 	db.tx('sell', async (t) => {
 		await t.none(
-			'INSERT INTO transactions (user_id, symbol, shares, price, trans_type, transacted) VALUES ($1, $2, $3, $4, $5, now());',
-			[userId, symbol, shares, price, trans_type]
+			"INSERT INTO transactions (user_id, symbol, shares, price, trans_type, transacted) VALUES ($1, $2, $3, $4, 'SELL', now());",
+			[userId, symbol, shares, price]
 		);
 
 		return t.none(
@@ -35,12 +35,12 @@ router.put('/', auth, async (req, res) => {
 // @access Private
 router.delete('/', auth, async (req, res) => {
 	const userId = req.user.id;
-	const { symbol, shares, price, trans_type } = req.body;
+	const { symbol, shares, price } = req.body;
 
 	db.tx('sell', async (t) => {
 		await t.none(
-			'INSERT INTO transactions (user_id, symbol, shares, price, trans_type, transacted) VALUES ($1, $2, $3, $4, $5, now());',
-			[userId, symbol, shares, price, trans_type]
+			"INSERT INTO transactions (user_id, symbol, shares, price, trans_type, transacted) VALUES ($1, $2, $3, $4, 'SELL', now());",
+			[userId, symbol, shares, price]
 		);
 
 		return t.none(
